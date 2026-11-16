@@ -1,0 +1,30 @@
+{
+  "name": "projeto2-financas-backend",
+  "version": "0.6.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "db:migrate": "node database/migrate.js",
+    "db:seed": "node database/seed.js",
+    "db:check": "node database/check.js",
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "test": "node --test tests/*.test.js",
+    "auth:check": "node database/auth-check.js",
+    "finance:check": "node database/finance-check.js",
+    "reports:check": "node database/reports-check.js",
+    "health:check": "node database/health-check.js"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.2.0",
+    "express": "^5.3.0",
+    "express-rate-limit": "^8.7.5",
+    "jsonwebtoken": "^9.0.3",
+    "pg": "^8.16.0"
+  }
+}
