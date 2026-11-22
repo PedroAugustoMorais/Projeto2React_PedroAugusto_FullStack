@@ -410,7 +410,7 @@ As pastas `node_modules` e `dist` não precisam ser enviadas ao GitHub. Os arqui
 
 ## Uso de ferramentas de apoio e IA
 
-**ChatGPT / Codex** foi utilizado para apoiar a modelagem do banco, a implementação da API, a criação dos componentes React, as regras de parcelamento, os testes e esta documentação.
+**ChatGPT / Codex** 
 
 A instalação local, a configuração do PostgreSQL e as verificações das funcionalidades foram realizadas pelo integrante.
 
