@@ -1,36 +1,89 @@
-# MinhasContas — Controle financeiro pessoal
+# MinhasContas — controle financeiro pessoal
 
-Projeto 2 da disciplina **Programação Web Full Stack**.
+Aplicação fullstack para organizar receitas, despesas, contas e compras parceladas, desenvolvida para o Projeto 2 da disciplina **Programação Web Fullstack**.
 
-**Integrante:** Pedro Augusto da Silva Morais — RA 2565935.
+## Integrante
 
-Aplicação com API REST própria em Node.js/Express, banco PostgreSQL e SPA React. Permite cadastrar usuários, registrar entradas e saídas, organizar categorias e fontes/destinos, parcelar compras e consultar relatórios e faturas.
+- **Pedro Augusto da Silva Morais — RA 2565935**
 
-## Tecnologias
+Projeto desenvolvido para apresentação individual.
 
-| Camada | Tecnologias |
+## Tecnologias e requisitos
+
+| Requisito | Implementação |
 | --- | --- |
-| Backend | Node.js, Express 5, PostgreSQL, `pg` com pool de conexões |
-| Autenticação | JWT com `jsonwebtoken`, senhas com `bcrypt` |
-| Configuração e proteção | `dotenv`, `cors`, `express-rate-limit` |
-| Frontend | React, Vite, React Router, Context API |
+| React.js | Componentes funcionais e interface reativa |
+| SPA | Navegação entre telas com React Router, sem recarregar o documento inteiro |
+| Backend | API REST própria com Node.js e Express |
+| Banco de dados | PostgreSQL, acessado pelo driver `pg` |
+| Comunicação | Requisições com `fetch` e respostas em JSON |
+| Autenticação | JWT com expiração e senhas protegidas com bcrypt |
+| Gerenciamento de estado | Context API, useContext, useState e useEffect |
 | Gráficos | Recharts |
-| Estilos | CSS responsivo e ilustrações vetoriais SVG |
-| Testes | Executor nativo `node:test` e `node:assert` |
+| Interface | CSS próprio e layout responsivo |
+| Integração funcional | Cadastro → login → movimentações → parcelamento → relatórios e faturas |
+| Funcionalidade adicional | Indicadores e projeção educativa de saúde financeira |
+| Ferramentas de apoio | Uso de IA documentado ao final deste README |
 
-O PostgreSQL foi escolhido e comunicado à professora. As bibliotecas utilizadas devem seguir a aprovação da disciplina. O frontend usa `fetch`, sem Axios, e CSS próprio, sem Material UI nesta implementação.
+O backend verifica a autenticação e restringe cada usuário aos próprios dados. Os registros financeiros são persistidos no PostgreSQL.
 
-## Pré-requisitos
+## Funcionalidades
 
-- Node.js **22.12 ou superior** e npm.
+- Cadastro com nome, e-mail, CPF, senha e confirmação.
+- Validação dos dígitos verificadores do CPF.
+- Bloqueio de e-mail e CPF duplicados.
+- Login com autenticação JWT e opção de conta de demonstração.
+- Rotas protegidas e encerramento da sessão no frontend.
+- Visão geral com resumo mensal, gráfico e últimos lançamentos.
+- Cadastro, consulta, edição e exclusão de categorias.
+- Gerenciamento de fontes de renda, contas e cartões de crédito.
+- Configuração de limite, fechamento e vencimento dos cartões.
+- Cadastro, consulta, edição e exclusão de entradas e saídas.
+- Filtros por período, tipo, categoria e fonte/destino.
+- Paginação com totais referentes ao filtro completo.
+- Compras no cartão com parcelamento entre 1 e 48 vezes.
+- Edição de uma parcela e exclusão individual ou da compra inteira.
+- Relatórios por categoria e por fonte/destino.
+- Percentuais e comparação com o período anterior.
+- Consulta da fatura aberta e das três seguintes.
+- Cálculo do limite comprometido e disponível.
+- Indicadores, projeção e orientações educativas de saúde financeira.
+- Estados de carregamento, erro, lista vazia e confirmação de exclusão.
+
+## Como executar
+
+### Pré-requisitos
+
+- Node.js **22.12 ou superior**, com npm instalado.
 - PostgreSQL **16 ou superior**, instalado e em execução.
-- Opcional: pgAdmin para criar e inspecionar o banco.
+- Conexão com a internet para instalar as dependências.
+- Opcional: pgAdmin para criar e consultar o banco.
 
-## Instalação do zero
+### 1. Baixar o projeto
 
-### 1. Criar o banco
+Clone o repositório:
 
-No pgAdmin, conectado ao servidor PostgreSQL, use **Databases → Create → Database** e crie `projeto2_financas`.
+```bash
+git clone https://github.com/PedroAugustoMorais/Projeto2React_PedroAugusto_FullStack.git
+```
+
+Entre na pasta:
+
+```bash
+cd Projeto2React_PedroAugusto_FullStack
+```
+
+Também é possível selecionar **Code → Download ZIP** no GitHub e extrair o arquivo.
+
+Abra a pasta raiz no VS Code.
+
+### 2. Criar o banco
+
+No pgAdmin, conectado ao servidor PostgreSQL, selecione **Databases → Create → Database** e crie:
+
+```text
+projeto2_financas
+```
 
 Alternativamente, conectado ao banco `postgres`, execute fora de uma transação:
 
@@ -38,19 +91,36 @@ Alternativamente, conectado ao banco `postgres`, execute fora de uma transação
 CREATE DATABASE projeto2_financas;
 ```
 
-### 2. Configurar o backend
+### 3. Configurar o backend
 
-Abra a pasta raiz do projeto no VS Code. Em um terminal CMD:
+No terminal, entre em `backend` e instale as dependências:
 
-```cmd
+```bash
 cd backend
 npm ci
+```
+
+Copie `.env.example` para `.env`.
+
+No Windows, usando CMD:
+
+```cmd
 copy .env.example .env
 ```
 
-No macOS/Linux, a cópia é `cp .env.example .env`. Os comandos npm são iguais.
+No PowerShell:
 
-Edite `backend/.env`:
+```powershell
+Copy-Item .env.example .env
+```
+
+No macOS ou Linux:
+
+```bash
+cp .env.example .env
+```
+
+Edite `backend/.env` com as configurações locais:
 
 ```env
 PORT=3000
@@ -59,318 +129,289 @@ JWT_SECRET=COLE_UM_SEGREDO_ALEATORIO_AQUI
 FRONTEND_ORIGIN=http://localhost:5173
 ```
 
-Troque `SUA_SENHA` pela senha local do PostgreSQL. Caracteres reservados na senha, como `@`, `#` ou `%`, precisam de codificação de URL. Gere um segredo com este comando e copie o resultado para `JWT_SECRET`:
+Substitua `SUA_SENHA` pela senha do PostgreSQL. Se utilizar outro usuário, ajuste também o nome `postgres`.
 
-```cmd
+Caracteres reservados na senha, como `@`, `#` e `%`, precisam de codificação de URL.
+
+Para gerar o segredo do JWT, execute:
+
+```bash
 node -e "console.log(require('node:crypto').randomBytes(48).toString('hex'))"
 ```
 
-Não envie o `.env` ao GitHub. O `.env.example` deve permanecer versionado. O servidor rejeita segredos curtos e o placeholder inicial.
+Copie o resultado para `JWT_SECRET`.
 
-### 3. Criar tabelas e dados de demonstração
+O `.env` contém configurações particulares e não deve ser enviado ao GitHub. O `.env.example` permanece no repositório como referência.
 
-Ainda em `backend`:
+### 4. Criar as tabelas e carregar a demonstração
 
-```cmd
+Ainda na pasta `backend`, execute:
+
+```bash
 npm run db:migrate
 npm run db:seed
 npm run db:check
 ```
 
-Em banco vazio: **2 usuários, 18 categorias, 6 fontes/destinos e 48 lançamentos em 3 meses**. Os meses são o atual e os dois anteriores no momento da carga. O seed não altera usuários já existentes com o mesmo e-mail ou CPF. As contagens podem ser diferentes se o banco já estiver em uso.
+Em um banco vazio, a carga inicial cria:
 
-### 4. Iniciar a API
+- 2 usuários;
+- 18 categorias;
+- 6 fontes/destinos;
+- 48 lançamentos distribuídos em três meses.
 
-```cmd
+Os meses correspondem ao mês da execução e aos dois anteriores. O seed preserva usuários já existentes com o mesmo e-mail ou CPF.
+
+### 5. Iniciar o backend
+
+```bash
 npm run dev
 ```
 
-Mantenha esse terminal aberto. Para verificar o processo, abra:
+Mantenha esse terminal aberto.
+
+Para conferir se a API está disponível, acesse:
 
 http://localhost:3000/health
 
-Resultado esperado: `{"status":"ok"}`.
+Resposta esperada:
 
-### 5. Iniciar o frontend
+```json
+{
+  "status": "ok"
+}
+```
 
-Abra **outro terminal** na raiz do projeto:
+### 6. Iniciar o frontend
 
-```cmd
+Abra outro terminal na raiz do projeto:
+
+```bash
 cd frontend
 npm ci
 npm run dev
 ```
 
-Abra o endereço **Local** informado pelo Vite:
+Abra o endereço **Local** informado pelo Vite, normalmente:
 
 http://localhost:5173
 
-O frontend encaminha `/api` para `http://localhost:3000` pelo proxy do Vite. Não é necessário criar um `.env` no frontend no uso padrão. Para uma porta diferente do backend, o `frontend/.env.example` documenta `API_PROXY_TARGET`; ajuste também `FRONTEND_ORIGIN` no backend para a origem real do navegador.
+Mantenha os dois servidores em execução. Para encerrar cada um, pressione **Ctrl + C** no terminal correspondente.
 
-Use `localhost:5173` com a configuração padrão. Acesso pelo endereço Network exige configurar `FRONTEND_ORIGIN` com o protocolo, IP e porta utilizados. CORS aceita apenas a origem configurada.
+O frontend encaminha as chamadas `/api` para o backend pelo proxy do Vite. Na configuração padrão, não é necessário criar um `.env` no frontend.
 
-### Atualização de uma etapa anterior
-
-Preserve `backend/.env`, seu banco e a pasta `.git`, se existir. Copie os arquivos novos sobre os anteriores e execute `npm ci` em cada pasta que recebeu novas dependências. A migration `001-inicial.sql` permanece idêntica às etapas anteriores; não recrie o banco. Nesta etapa, `frontend/` passa a conter a aplicação React.
+Para acessar pelo endereço Network, ajuste `FRONTEND_ORIGIN` no backend para a origem utilizada no navegador.
 
 ## Contas de demonstração
 
-| Nome | E-mail | Senha demonstrativa |
+| Usuário | E-mail | Senha |
 | --- | --- | --- |
 | Ana Demonstração | ana@example.com | Demo12345 |
 | Bruno Demonstração | bruno@example.com | Demo12345 |
 
-A tela de login também oferece **Usar conta de demonstração**, que autentica a conta Ana pelo mesmo endpoint de login. Essas contas e senhas são públicas e se destinam apenas ao projeto local. Use dados fictícios na apresentação. Os CPFs do seed são exemplos matematicamente válidos para teste; não são dados dos integrantes.
+O botão **Usar conta de demonstração** autentica a conta da Ana pelo mesmo endpoint utilizado no login comum.
 
-## Telas e funcionalidades
+Essas credenciais são públicas e destinadas à demonstração local. Utilize dados fictícios nos testes. Os CPFs da carga inicial são exemplos com dígitos verificadores válidos, sem consulta ou confirmação de identidade.
 
-| Tela | Funcionalidades |
-| --- | --- |
-| Cadastro | Nome, CPF com máscara, e-mail, senha e confirmação; erros por campo; duplicidade rejeitada pelo servidor |
-| Login | Autenticação por e-mail e senha e acesso à demonstração |
-| Visão geral | Resumo mensal, gráfico por categoria e últimos lançamentos |
-| Lançamentos | CRUD, período/tipo/categoria/fonte, paginação e totais completos do filtro |
-| Categorias | CRUD de categorias de entrada e saída |
-| Fontes e destinos | CRUD de contas, rendas e cartões com fechamento, vencimento e limite |
-| Relatórios | Categorias com percentuais e comparação anterior; fontes/destinos com gráfico e saldo das contas |
-| Faturas | Fatura aberta, próximas três, parcelas, vencimentos e limite comprometido |
-| Saúde financeira | Indicadores, projeção de três meses e dicas educativas calculadas no backend |
+## API REST utilizada
 
-Há estados de carregamento, lista vazia e erro com nova tentativa. Formulários mostram os erros devolvidos pela API junto aos campos correspondentes. Exclusões pedem confirmação; em compras parceladas, o usuário escolhe excluir uma parcela ou todas as restantes.
+A aplicação utiliza uma **API própria**, desenvolvida com Node.js e Express.
 
-O dashboard e os relatórios consomem agregações do servidor; os gráficos não recalculam os totais a partir de listas paginadas.
+Endereço padrão:
 
-### Sessão e rotas protegidas
-
-`AuthContext` disponibiliza usuário, token, `login`, `logout` e `cadastrar`. O token fica no **sessionStorage**, sobrevivendo ao recarregamento na mesma aba; o aplicativo confirma a identidade com `/api/auth/me` na inicialização. Login é necessário para acessar todas as telas financeiras.
-
-`services/api.js` centraliza as requisições, adiciona `Authorization: Bearer <token>` e encerra a sessão em respostas `401` protegidas. A expiração também é acompanhada por um timer no frontend. Essa leitura do prazo não substitui a verificação criptográfica no servidor.
-
-Logout descarta o token no navegador. Não há revogação antecipada: um token copiado continua válido até a expiração de uma hora. Fechar a aba encerra normalmente o sessionStorage, sujeito ao comportamento de restauração de sessão do navegador.
-
-## Modelo de dados e integridade
-
-- **usuarios:** nome, e-mail normalizado em minúsculas, CPF só com dígitos, hash e data de criação. E-mail e CPF possuem `UNIQUE` no banco.
-- **categorias:** pertencem ao usuário e têm tipo entrada/saída. Unicidade por usuário, nome sem diferenciar maiúsculas e tipo, seguindo RF4 e o DDL de referência.
-- **fontes_destinos:** pertencem ao usuário; tipos renda, conta ou cartão de crédito. Cartões exigem fechamento, vencimento e limite positivo.
-- **lancamentos:** valor positivo em `NUMERIC(12,2)`, data, categoria, fonte/destino e identificação das parcelas.
-
-Chaves estrangeiras compostas garantem que categoria e fonte/destino pertençam ao mesmo usuário do lançamento e que o tipo da categoria seja compatível. O servidor também faz essas validações. Acesso a um registro de outra pessoa retorna `404`, sem revelar sua existência.
-
-Categoria ou fonte com lançamentos associados não pode ser excluída (`409`). Categoria não pode mudar de tipo se invalidar registros existentes; fonte/destino com lançamentos não pode mudar de tipo. Contas aceitam entradas e saídas; rendas aceitam entradas; cartões aceitam saídas.
-
-O cadastro cria as categorias padrão e a conta corrente na **mesma transação** do usuário. A migration registra um checksum e rejeita alterações no SQL já aplicado. Novas alterações de esquema devem utilizar novas migrations.
-
-## Valores, parcelas e datas
-
-### Lançamentos
-
-- Valores são positivos; o tipo determina entrada ou saída.
-- Parcelamento disponível apenas para saídas em cartão de crédito, entre 1 e 48 parcelas.
-- Na criação, `valor` representa o **total da compra**. A divisão usa centavos inteiros, com o resto na primeira parcela: R$ 100,00 em 3× = R$ 33,34 + R$ 33,33 + R$ 33,33.
-- Cada parcela é um lançamento com o mesmo `grupo_parcelamento`. Todas são inseridas em uma transação; uma falha reverte a compra inteira.
-- Todas as parcelas guardam a **data original da compra**, opção permitida pelo RF9. O índice da parcela é aplicado uma única vez ao calcular sua fatura.
-- A edição altera **apenas a parcela selecionada**. O valor informado é o daquela parcela; a estrutura de parcelamento não é alterada.
-- Filtros, totais e relatórios agrupam pela data da compra, incluindo suas parcelas. Não representam liquidação ou pagamento bancário. A visão por vencimento aparece em Faturas.
-
-### Relatórios
-
-As agregações usam `SUM` e `GROUP BY` no PostgreSQL. O saldo é entradas menos saídas. No relatório por fonte/destino, saldo é mostrado apenas para contas.
-
-Um mês civil completo é comparado ao mês civil anterior, seguindo o exemplo do enunciado (outubro versus setembro). Outros intervalos são comparados aos dias imediatamente anteriores de mesma duração. Sem base anterior, a variação percentual é `null` e a interface mostra **Novo no período**. Percentuais são arredondados a duas casas e podem não somar exatamente 100%.
-
-### Faturas
-
-- Compra antes do dia de fechamento entra na fatura que fecha naquele mês.
-- Compra no dia do fechamento ou depois entra na próxima.
-- Parcela k entra k−1 meses depois da primeira.
-- Se o dia do vencimento é maior que o de fechamento, o vencimento fica no mesmo mês; caso contrário, no seguinte.
-- Dias inexistentes são ajustados ao último dia do mês, incluindo anos bissextos.
-- O limite comprometido inclui **todas as parcelas ainda não vencidas**, mesmo além das quatro faturas exibidas. A parcela que vence na data de referência ainda é considerada comprometida.
-- Faturas fechadas, mas ainda a vencer, aparecem separadamente quando existirem.
-- Limite disponível pode ficar negativo; a interface sinaliza excesso, sem impedir o registro de gastos.
-- Os limites exibidos referem-se à data consultada. Não há baixa de pagamento: excluir parcelas vencidas do comprometimento não afirma que foram realmente pagas.
-- Alterar fechamento/vencimento de um cartão recalcula suas previsões, pois não há histórico imutável de ciclos nesta modelagem.
-
-Dinheiro permanece em `NUMERIC` no banco e em strings decimais no JSON. Operações adicionais do servidor usam `BigInt` em centavos; a conversão para `Number` no frontend destina-se à apresentação em reais e aos gráficos.
-
-## Rotas da API
-
-Todas as rotas `/api` exigem JWT, exceto cadastro e login. `/health` é uma rota pública separada de diagnóstico.
-
-| Método | Rota | Função |
-| --- | --- | --- |
-| GET | `/health` | Disponibilidade do processo |
-| POST | `/api/auth/cadastro` | Cadastrar usuário e padrões |
-| POST | `/api/auth/login` | Entrar e receber JWT |
-| GET | `/api/auth/me` | Consultar usuário autenticado |
-| GET, POST | `/api/categorias` | Listar/criar categorias |
-| GET, PUT, DELETE | `/api/categorias/:id` | Consultar/editar/excluir categoria |
-| GET, POST | `/api/fontes-destinos` | Listar/criar fontes e destinos |
-| GET, PUT, DELETE | `/api/fontes-destinos/:id` | Consultar/editar/excluir fonte/destino |
-| GET, POST | `/api/lancamentos` | Listar/criar lançamento ou compra parcelada |
-| GET, PUT, DELETE | `/api/lancamentos/:id` | Consultar/editar/excluir parcela |
-| GET | `/api/relatorios/categorias` | Totais, percentuais e comparação anterior |
-| GET | `/api/relatorios/fontes-destinos` | Movimentações e saldo das contas |
-| GET | `/api/faturas` | Previsão e limites dos cartões |
-| GET | `/api/saude-financeira` | Indicadores, histórico, projeção e dicas do usuário |
-
-Códigos principais: `200` em consulta/edição, `201` em criação, `204` em exclusão; `400` em validação, `401` sem token válido, `404` em registro inacessível, `409` em duplicidade/vínculo, `429` em excesso de tentativas.
-
-Erro padronizado:
-
-```json
-{
-  "erro": "Revise os campos informados.",
-  "campos": { "cpf": "Informe um CPF válido." }
-}
+```text
+http://localhost:3000/api
 ```
 
-`campos` aparece quando o erro está associado a campos. Erros internos não expõem SQL, stack trace, senha ou hash.
+O frontend envia requisições HTTP com `fetch`, e a API consulta o PostgreSQL e retorna dados em JSON.
 
-### Parâmetros e corpos
+| Método | Rota | Funcionalidade |
+| --- | --- | --- |
+| POST | `/api/auth/cadastro` | Cadastrar usuário |
+| POST | `/api/auth/login` | Autenticar e receber JWT |
+| GET | `/api/auth/me` | Consultar usuário autenticado |
+| GET / POST | `/api/categorias` | Listar e criar categorias |
+| GET / PUT / DELETE | `/api/categorias/:id` | Consultar, editar e excluir categoria |
+| GET / POST | `/api/fontes-destinos` | Listar e criar fontes/destinos |
+| GET / PUT / DELETE | `/api/fontes-destinos/:id` | Consultar, editar e excluir fonte/destino |
+| GET / POST | `/api/lancamentos` | Listar e criar lançamentos |
+| GET / PUT / DELETE | `/api/lancamentos/:id` | Consultar, editar e excluir lançamento |
+| GET | `/api/relatorios/categorias` | Totais, percentuais e comparação anterior |
+| GET | `/api/relatorios/fontes-destinos` | Movimentações e saldo das contas |
+| GET | `/api/faturas` | Faturas e limites dos cartões |
+| GET | `/api/saude-financeira` | Indicadores e projeção financeira |
 
-- Cadastro: `nome`, `email`, `cpf`, `senha`, `confirmacaoSenha`.
-- Login: `email`, `senha`. Resposta inclui `token`, `usuario`, `expiresIn` (3600 segundos).
-- Categoria: `nome`, `tipo` (`entrada` ou `saida`).
-- Fonte/destino: `nome`, `tipo` (`renda`, `conta`, `cartao_credito`); cartão também exige `dia_fechamento`, `dia_vencimento`, `limite`.
-- Lançamento: `tipo`, `descricao`, `valor` (decimal com ponto), `data` (AAAA-MM-DD), `categoria_id`, `fonte_destino_id`; na criação, `total_parcelas` opcional (padrão 1).
-- Edição de lançamento: envia os campos editáveis completos; não aceita alteração de `parcela_atual`, `total_parcelas` ou `grupo_parcelamento`.
-- Exclusão de lançamento: `?escopo=parcela` (padrão) ou `?escopo=compra`.
-- Lista de lançamentos: `inicio`, `fim`, `tipo`, `categoria_id`, `fonte_destino_id`, `pagina` (padrão 1), `limite` (padrão 20, máximo 100). Período padrão: mês corrente. Retorna `dados`, `periodo`, `paginacao` e `totais` de **todo o filtro**.
-- Relatórios: `inicio`, `fim`; padrão mês corrente.
-- Faturas: `cartao_id` e `data_referencia` opcionais; padrão todos os cartões do usuário e data local do servidor.
+As rotas financeiras exigem o cabeçalho:
 
-## Segurança
+```http
+Authorization: Bearer TOKEN
+```
 
-- Senhas com bcrypt, custo 12 e salt automático. Mínimo de oito caracteres, letras e números; máximo de 72 bytes para evitar truncamento do bcrypt.
-- CPF validado pelos dois dígitos verificadores; e-mail e CPF normalizados antes da gravação. A garantia de unicidade é do banco.
-- JWT HS256 com expiração, emissor e destinatário verificados. O usuário vem de `sub`, nunca de um `usuario_id` enviado pelo cliente.
-- Consultas parametrizadas. Nomes SQL dinâmicos são metadados internos fixos, nunca texto de requisições.
-- CORS restrito à origem configurada. Requisições sem Origin, como as de terminal, continuam exigindo autenticação nas rotas protegidas.
-- Dez falhas de login por IP em 15 minutos; dez tentativas de cadastro por IP em 15 minutos. Limites locais ao processo nesta execução acadêmica.
-- Limite de tamanho do JSON, validações no servidor e no cliente e mensagens genéricas para credenciais inválidas.
-- Nenhuma resposta da API retorna `senha_hash`.
+Cadastro e login são públicos. A rota de diagnóstico `/health` também é pública e fica fora de `/api`.
+
+Os principais códigos de resposta são:
+
+| Código | Significado |
+| --- | --- |
+| 200 | Consulta ou edição concluída |
+| 201 | Registro criado |
+| 204 | Exclusão concluída |
+| 400 | Dados inválidos |
+| 401 | Autenticação ausente ou inválida |
+| 404 | Registro não encontrado ou inacessível ao usuário |
+| 409 | Duplicidade ou vínculo que impede a operação |
+| 429 | Limite de tentativas atingido |
+
+## Hooks e gerenciamento da sessão
+
+O `AuthContext` compartilha as informações de autenticação entre os componentes.
+
+| Recurso | Papel no projeto |
+| --- | --- |
+| useState | Mantém estados como usuário, token e inicialização da sessão |
+| useEffect | Verifica a sessão existente, acompanha a expiração e limpa operações pendentes |
+| useContext | Permite consumir o contexto de autenticação nos componentes |
+| Context API | Disponibiliza usuário e funções como login, logout e cadastro |
+| React Router | Organiza a navegação e as rotas protegidas da interface |
+
+O token fica no `sessionStorage`. Ao recarregar a aplicação, a identidade é verificada por `/api/auth/me`.
+
+O serviço `frontend/src/services/api.js` centraliza o `fetch`, inclui o token e trata os erros. Respostas `401` em operações protegidas encerram a sessão no frontend.
+
+O logout remove o token do navegador. Não existe revogação antecipada no servidor: um token copiado permanece válido até sua expiração de uma hora.
+
+## Banco de dados e segurança
+
+| Tabela | Dados principais |
+| --- | --- |
+| usuarios | Nome, e-mail, CPF e hash da senha |
+| categorias | Nome, tipo e usuário proprietário |
+| fontes_destinos | Contas, rendas e cartões pertencentes ao usuário |
+| lancamentos | Entradas, saídas, valores, datas e identificação das parcelas |
+
+- E-mail e CPF possuem restrições `UNIQUE` no banco.
+- Senhas são armazenadas com bcrypt, salt automático e custo 12.
+- O JWT tem assinatura, expiração, emissor e destinatário verificados.
+- A identidade utilizada nas consultas vem do token.
+- Consultas filtram os registros pelo usuário autenticado.
+- Consultar, editar ou excluir um registro de outro usuário retorna `404`.
+- As consultas SQL são parametrizadas.
+- Chaves estrangeiras protegem os relacionamentos e a propriedade dos dados.
+- Cadastros com lançamentos vinculados possuem proteção contra exclusão.
+- Erros não devolvem senha, hash ou detalhes internos do banco.
+- Há limites de tentativas para cadastro e login.
+
+## Regras de lançamentos, parcelas e faturas
+
+- Valores são positivos; o tipo define entrada ou saída.
+- Contas aceitam entradas e saídas.
+- Fontes de renda aceitam entradas.
+- Cartões de crédito aceitam saídas.
+- Parcelamento é permitido somente em cartão de crédito, entre 1 e 48 parcelas.
+- Na criação de uma compra, o valor informado representa o total.
+- A divisão utiliza centavos inteiros para preservar a soma.
+- Exemplo: **R$ 100,00 em 3 parcelas = R$ 33,34 + R$ 33,33 + R$ 33,33**.
+- Todas as parcelas da compra são inseridas na mesma transação.
+- Cada parcela mantém a data original da compra.
+- A edição altera somente a parcela selecionada.
+- A exclusão permite remover uma parcela ou todos os registros ainda existentes da compra.
+- Relatórios agrupam os lançamentos pela data da compra; as faturas apresentam a distribuição por vencimento.
+- Compras anteriores ao fechamento entram no ciclo que fecha naquele mês.
+- Compras no dia do fechamento ou depois entram no próximo ciclo.
+- Dias inexistentes são ajustados ao último dia do mês.
+- O limite comprometido considera todas as parcelas ainda não vencidas, inclusive além das quatro faturas exibidas.
+
+Não há integração bancária, pagamento de faturas ou confirmação de quitação. Os valores apresentados são calculados a partir dos registros cadastrados.
+
+## Saúde financeira
+
+A funcionalidade adicional apresenta:
+
+- Taxa de sobra do mês.
+- Comprometimento com cartões nos três meses seguintes.
+- Total e quantidade de parcelas futuras.
+- Projeção dos próximos três meses.
+- Gráfico da variação acumulada estimada.
+- Orientações educativas baseadas em regras.
+
+A análise considera os três meses completos anteriores ao mês selecionado. Quando há menos histórico, a interface informa essa limitação.
+
+Compras no cartão são consideradas pelo vencimento calculado; os demais lançamentos, pela data registrada. As parcelas são acrescentadas separadamente à projeção para evitar dupla contagem.
+
+O acumulado projetado começa em zero e **não representa saldo bancário real**. Os resultados são educativos, sem recomendação financeira profissional, API de IA ou promessa de resultado.
 
 ## Estrutura
 
 ```text
 backend/
-  database/                 SQL, migration, seed e verificações de execução
+  database/                 SQL, migração, carga inicial e verificações
   src/
-    server.js               inicialização do Express
-    config/                 pool, app, validações e funções puras
-    routes/                 rotas com seus controladores
-    models/                 acesso ao banco e regras de persistência
-    middlewares/            autenticação e tratamento central de erros
-  tests/                    validação, regras e cenários HTTP
+    server.js               inicialização do servidor
+    config/                 configurações, validações e funções de cálculo
+    routes/                 endpoints e seus controladores
+    models/                 consultas SQL e persistência
+    middlewares/            autenticação e tratamento de erros
+  tests/                    validações e cenários de integração
 frontend/
   src/
     main.jsx                ponto de entrada
-    styles.css              visual e responsividade
-    components/             telas, formulários, gráficos e componentes comuns
-    contexts/               AuthContext
-    services/               cliente HTTP centralizado
+    components/             telas, formulários e gráficos
+    contexts/               contexto de autenticação
+    services/               comunicação com a API
+    styles.css              estilos e responsividade
   tests/                    cliente HTTP e formatação
 ```
 
-Não há pasta `controllers`: os controladores estão nos arquivos de rotas, conforme o enunciado. Funções puras foram colocadas em `config`; operações no banco ficam em `models`. Os comandos de `database/` apenas iniciam e encerram as tarefas de persistência, ou consomem a API para verificação.
+## Verificação
 
-## Verificações e testes
+Com a API em execução, abra outro terminal em `backend`:
 
-Com o backend em execução, em outro terminal dentro de `backend`:
-
-```cmd
+```bash
 npm run auth:check
 npm run finance:check
 npm run reports:check
 npm run health:check
 ```
 
-Resultados esperados: seis, oito, oito e oito verificações `OK`, respectivamente. Usam as contas do seed. `finance:check` cria dados temporários e os remove; os demais apenas consultam. Se o processo for interrompido durante o teste financeiro, podem restar registros nomeados `Teste` e `Cartão teste`; confira as mensagens de limpeza.
+Os comandos verificam autenticação, isolamento entre usuários, operações financeiras, relatórios, faturas e saúde financeira utilizando as contas de demonstração.
 
-Testes unitários do backend:
+O teste financeiro cria registros temporários e os remove ao concluir.
 
-```cmd
+### Testes do backend
+
+Na pasta `backend`:
+
+```bash
 npm test
 ```
 
-São **22 testes unitários**. O teste HTTP integrado ao PostgreSQL só executa quando `TEST_DATABASE_URL` estiver definido; caso contrário, aparece como **ignorado**, não como aprovado.
+O projeto contém 22 testes unitários. Os cenários HTTP integrados ao PostgreSQL exigem `TEST_DATABASE_URL`; sem essa configuração, o teste integrado aparece como ignorado.
 
-Para habilitá-lo, crie um banco separado, `projeto2_financas_test`, adicione ao `.env` a conexão abaixo com a senha local e execute `npm test` novamente:
+Para executá-lo, crie um banco separado e configure no `.env`:
 
 ```env
 TEST_DATABASE_URL=postgresql://postgres:SUA_SENHA@localhost:5432/projeto2_financas_test
 ```
 
-O teste cria e remove um schema temporário com nome aleatório. A conta precisa ter permissão de criar schemas. Não use uma conexão de produção.
+O teste cria e remove um schema temporário. Não utilize uma conexão de produção.
 
-Dentro de `frontend`:
+### Testes e build do frontend
 
-```cmd
+Na pasta `frontend`:
+
+```bash
 npm test
 npm run build
 ```
 
-São **8 testes** de cliente HTTP e formatação. O build gera `frontend/dist`. Essa pasta não precisa ser enviada ao GitHub, pois pode ser reproduzida a partir dos fontes e do lockfile.
+São 8 testes de cliente HTTP e formatação. O build gera a versão de produção em `frontend/dist`.
 
-### Conferência desta entrega
+As pastas `node_modules` e `dist` não precisam ser enviadas ao GitHub. Os arquivos `package-lock.json` devem permanecer versionados.
 
-- Migration e seed exercitados em motor PostgreSQL embarcado para teste, sem adicioná-lo às dependências da aplicação.
-- Cenários HTTP de autenticação, transações, CRUD, isolamento entre usuários, relatórios, centavos e faturas passaram nesse motor.
-- Os quatro exemplos de fechamento do enunciado e uma compra de 48 parcelas foram conferidos.
-- Na versão atual, 22 testes unitários do backend, 8 do frontend e o build de produção passaram.
-- Login e cadastro foram inspecionados visualmente; mensagens de campos vazios foram verificadas no navegador. A prévia deste ambiente não alcançou a API de teste. Na instalação local do aluno, autenticação, compra parcelada e distribuição nas faturas foram conferidas. A nova página de saúde financeira ainda precisa de conferência visual local.
+## Uso de ferramentas de apoio e IA
 
-Na instalação local, confira: entrar, recarregar mantendo a sessão, criar uma conta, testar e-mail e CPF duplicados, registrar uma compra parcelada, consultar relatórios/faturas, editar e excluir registros, sair e tentar abrir uma rota protegida. Os dados efetivamente persistem no PostgreSQL, não no localStorage.
+**ChatGPT / Codex** foi utilizado para apoiar a modelagem do banco, a implementação da API, a criação dos componentes React, as regras de parcelamento, os testes e esta documentação.
 
-## Entrega acadêmica
+A instalação local, a configuração do PostgreSQL e as verificações das funcionalidades foram realizadas pelo integrante.
 
-A entrega exige link do repositório e apresentação de **no máximo 10 minutos**, demonstrando código, execução por terminal, cadastro com unicidade, login/token/isolamento, CRUDs, parcelamento e relatórios/faturas. O README documenta a instalação do zero e a lista de rotas. Registre commits das alterações realizadas durante o desenvolvimento.
-
-O desafio opcional de **saúde financeira** foi implementado com três indicadores principais, projeção com gráfico e dicas baseadas em regras do backend. A pontuação depende da avaliação da professora. Esta versão está sujeita à conferência local do fluxo completo.
-
-## Uso de IA
-
-ChatGPT/Codex auxilia na modelagem, criação dos componentes, implementação, testes e documentação. O aluno deve estudar a implementação, registrar suas alterações reais e explicar as partes apresentadas. Foram realizadas pelo aluno a instalação local, preparação do PostgreSQL e verificações das etapas de autenticação, CRUD e relatórios.
-
-
-## Saúde financeira — desafio opcional
-
-A tela `/saude-financeira` consome `GET /api/saude-financeira?mes=AAAA-MM`. Sem o parâmetro, usa o mês corrente. A rota exige JWT; a consulta sempre filtra pelo id do token. Não usa API de inteligência artificial, chave externa ou dados de outro usuário. O aviso de que os dados são educativos e não constituem recomendação financeira profissional aparece na própria tela.
-
-### Indicadores
-
-1. **Taxa de sobra do mês:** `(entradas − saídas) ÷ entradas × 100`. Se não houver entradas, retorna `null` e a interface mostra “Sem base”. Pode ser negativa. É uma diferença dos registros do mês, não comprovação de dinheiro poupado.
-2. **Comprometimento com cartões:** faturas dos três meses seguintes divididas por três vezes a renda média mensal histórica, em percentual. Sem média de renda, retorna `null`. O denominador e o numerador representam os mesmos três meses.
-3. **Parcelas futuras:** soma e quantidade das parcelas de compras em cartão com vencimento após o mês selecionado, incluindo as posteriores aos três meses projetados, com a data da última parcela.
-
-Para essa análise, compras no cartão são alocadas pelo **vencimento calculado da fatura**, e os demais registros pela data do lançamento. Isso difere dos relatórios por data de compra e está explicado nas hipóteses visíveis da tela.
-
-### Base e projeção
-
-A janela histórica contém os três meses civis completos anteriores ao mês selecionado. As médias usam somente os meses dessa janela com algum registro. Se houver menos de três, a tela avisa “Histórico parcial”. Meses sem registros não são afirmados como meses sem renda real. Com nenhum histórico, a média é zero e o cenário usa somente os registros futuros conhecidos.
-
-A média regular de saídas **exclui compras parceladas**. Para cada um dos próximos três meses:
-
-- Entradas estimadas = maior valor entre renda média histórica e entradas já cadastradas para aquele mês.
-- Saídas regulares estimadas = maior valor entre média de despesas não parceladas e saídas não parceladas conhecidas do mês.
-- Parcelas conhecidas = soma das parcelas no vencimento daquele mês, acrescentada separadamente.
-- Variação mensal = entradas estimadas − saídas regulares estimadas − parcelas conhecidas.
-- Variação acumulada = soma das variações mensais, **partindo de zero**.
-
-Usar o maior entre média e registros conhecidos é uma hipótese explícita deste exercício, não uma previsão garantida nem uma recomendação. Evita somar duas vezes o mesmo gasto conhecido à média. O gráfico mostra a variação acumulada estimada, sem tratá-la como saldo bancário: o sistema não tem saldo inicial de conta nem baixa de pagamentos. As médias são arredondadas ao centavo; cálculos monetários continuam usando inteiros no servidor.
-
-### Dicas e verificações
-
-As dicas são descritivas e geradas por regras: ausência de entradas, diferença positiva/negativa no mês, existência de parcelas futuras, histórico parcial e cenário com variação acumulada negativa. Valores e datas do texto vêm dos próprios cálculos. Não há notas de crédito, recomendações de investimento ou promessa de resultado.
-
-Seus dados de demonstração incluem o mês atual e os dois anteriores, portanto é esperado que a análise do mês atual encontre apenas dois meses completos de histórico. Isso é informado na página.
-
-Para atualizar da etapa anterior, preserve `.env`, `.git` e banco. Atualize os arquivos e reinicie backend e frontend. Em um terceiro terminal dentro de `backend`, execute:
-
-```cmd
-npm run health:check
-```
-
-Oito resultados `OK` são esperados. O comando apenas lê dados. A integração foi exercitada em motor PostgreSQL embarcado: não mistura usuários, rejeita mês inválido e exige token. Seis testes unitários novos cobrem indicadores, centavos, falta de registros, ausência de dupla contagem, cenário negativo e virada do ano. Não há nova migration.
+O código foi produzido com auxílio de IA.
