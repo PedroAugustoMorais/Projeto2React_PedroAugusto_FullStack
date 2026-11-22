@@ -8,6 +8,11 @@ Aplicação fullstack para organizar receitas, despesas, contas e compras parcel
 
 Projeto desenvolvido para apresentação individual.
 
+## Vídeo de apresentação
+
+- [Assistir no YouTube](https://youtu.be/GkzULDpjvC8)
+- [Assistir no Google Drive](https://drive.google.com/file/d/1P-fPwluc1YJKVVQ1P7tpXCFhvhusb8Xb/view?usp=drive_link)
+
 ## Tecnologias e requisitos
 
 | Requisito | Implementação |
